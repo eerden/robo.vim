@@ -1,6 +1,6 @@
 "--------- Robo Helper ----------
 
-function! GetActivityList(manifest)
+function! s:GetActivityList(manifest)
     let manifestfile = readfile(a:manifest)
     let activityFront = '' 
     let activityMiddle = ''
@@ -94,7 +94,7 @@ endfunction
 "init all the things
 function! s:InitRobo()"{{{
     let g:RoboManifestFile = SetManifestFile()  
-    let g:RoboActivityList = s:GetActivities(g:RoboManifestFile) 
+    let g:RoboActivityList = s:GetActivityList(g:RoboManifestFile) 
     let g:RoboProjectDir = GetDirectories(g:RoboManifestFile)
     let g:RoboPackagePath = GetPackagePath(g:RoboManifestFile)
     let g:RoboSrcPath = GetSrcPath()
