@@ -1,6 +1,6 @@
 "--------- Robo Helper ----------
 
-function! s:GetActivityList(manifest)
+function! s:GetActivityList(manifest)"{{{
     let manifestfile = readfile(a:manifest)
     let activityFront = '' 
     let activityMiddle = ''
@@ -30,12 +30,11 @@ function! s:GetActivityList(manifest)
     endfor
     for line in activityStringList
         let currentActivity = matchlist(line, '<activity\_.\{-}android:name="\(.\{-}\)".\{-}>')
-        let activitylist += [currentActivity[1]]
+        let activity = currentActivity[1]
+        let activitylist += [substitute(activity, '^\.', '','')]
     endfor
     return activitylist
-endfunction
-
-
+endfunction"}}}
 
 function! s:GetActivities(manifest)"{{{
     let activities = []
@@ -61,7 +60,7 @@ function! SetManifestFile()"{{{
     endif
 endfunction"}}}
 
-function! GetDirectories(manifest)"{{{
+function! s:GetDirectories(manifest)"{{{
   let pathlen =  match(a:manifest, 'AndroidManifest.xml')  
   return strpart(a:manifest, 0, pathlen)
 endfunction"}}}
@@ -88,18 +87,22 @@ function! s:OpenActivity(name)"{{{
     exec 'edit ' . g:RoboSrcPath. a:name . '.java'
 endfunction"}}}
 
-function! s:ListActivities(A,L,P)
+function! s:ListActivities(A,L,P)"{{{
     return g:RoboActivityList 
-endfunction
-"init all the things
+endfunction"}}}
+
 function! s:InitRobo()"{{{
     let g:RoboManifestFile = SetManifestFile()  
     let g:RoboActivityList = s:GetActivityList(g:RoboManifestFile) 
-    let g:RoboProjectDir = GetDirectories(g:RoboManifestFile)
+    let g:RoboProjectDir = s:GetDirectories(g:RoboManifestFile)
     let g:RoboPackagePath = GetPackagePath(g:RoboManifestFile)
     let g:RoboSrcPath = GetSrcPath()
 endfunction"}}}
+
+"Set up vim stuff"{{{
 command! -n=0 -bar RoboInit :call s:InitRobo()
 command! -n=0 -bar RoboOpenManifest :call s:OpenManifestFile()
 command! -n=1 -complete=customlist,s:ListActivities -bar RoboOpenActivity :call s:OpenActivity('<args>')
 
+
+"}}}
