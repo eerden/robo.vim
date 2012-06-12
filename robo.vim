@@ -1,4 +1,11 @@
 "--------- Robo Helper ----------
+function! GotoActivity()
+    let currentWord =  expand('<cword>')
+    let activity = substitute(currentWord, '^\.', '','')
+    call s:OpenActivity(activity)
+    
+    
+endfunction
 
 function! s:GetActivityList(manifest)"{{{
     let manifestfile = readfile(a:manifest)
@@ -103,6 +110,4 @@ endfunction"}}}
 command! -n=0 -bar RoboInit :call s:InitRobo()
 command! -n=0 -bar RoboOpenManifest :call s:OpenManifestFile()
 command! -n=1 -complete=customlist,s:ListActivities -bar RoboOpenActivity :call s:OpenActivity('<args>')
-
-
 "}}}
