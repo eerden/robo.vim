@@ -111,9 +111,12 @@ function! s:Init()"{{{
     let g:RoboManifestFile = SetManifestFile()  
     let g:RoboActivityList = s:GetActivityList(g:RoboManifestFile) 
     let g:RoboProjectDir = s:GetDirectories(g:RoboManifestFile)
+    let g:RoboAntBuildFile =  g:RoboProjectDir . 'build.xml'
     let g:RoboPackagePath = GetPackagePath(g:RoboManifestFile)
     let g:RoboSrcDir = GetSrcDir()
     let g:RoboResDir = g:RoboProjectDir . 'res/' 
+    set makeprg=ant\ -emacs\ -find\ build.xml
+    set efm=%A\ %#[javac]\ %f:%l:\ %m,%-Z\ %#[javac]\ %p^,%-C%.%#
 
     "Set up vim stuff"
     "Commands
@@ -162,8 +165,7 @@ function! ShowActivities()"{{{
     map <buffer> <cr> :RoboGoToActivity<cr>
 endfunction"}}}
 
-
-function! FindR()
+function! FindR()"{{{
     "echo matchlist(line, 'R\..\{-}\..\{-}\>')
     let word = expand('<cWORD>')
     let results =  matchlist(word, 'R\.\([a-z0-9]*\)\.\([a-z0-9_]*\)')
@@ -174,9 +176,7 @@ function! FindR()
         exec 'edit ' .path
     endif
     
-endfunction
-
-
+endfunction"}}}
 
 
 "Set up vim stuff"
