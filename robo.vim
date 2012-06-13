@@ -88,13 +88,13 @@ function! GetPackagePath(manifest)"{{{
     endfor
 endfunction"}}}
 
-function! GetSrcPath()"{{{
+function! GetSrcDir()"{{{
    return g:RoboProjectDir . 'src/' . GetPackagePath(g:RoboManifestFile) 
 endfunction"}}}
 
 function! s:OpenActivity(name)"{{{
 
-    let filename =  g:RoboSrcPath. a:name . '.java'
+    let filename =  g:RoboSrcDir. a:name . '.java'
     if filereadable(filename)
         exec 'edit ' .  filename
     else
@@ -112,7 +112,8 @@ function! s:Init()"{{{
     let g:RoboActivityList = s:GetActivityList(g:RoboManifestFile) 
     let g:RoboProjectDir = s:GetDirectories(g:RoboManifestFile)
     let g:RoboPackagePath = GetPackagePath(g:RoboManifestFile)
-    let g:RoboSrcPath = GetSrcPath()
+    let g:RoboSrcDir = GetSrcDir()
+    let g:RoboResDir = g:RoboProjectDir . 'res/' 
 
     "Set up vim stuff"
     "Commands
@@ -130,7 +131,8 @@ function! s:UnInit()"{{{
     unlet g:RoboActivityList
     unlet g:RoboProjectDir
     unlet g:RoboPackagePath
-    unlet g:RoboSrcPath
+    unlet g:RoboSrcDir
+    unlet g:RoboResDir
 
     "Set up vim stuff"
     "Commands
@@ -159,6 +161,23 @@ function! ShowActivities()"{{{
     setlocal nomodifiable
     map <buffer> <cr> :RoboGoToActivity<cr>
 endfunction"}}}
+
+
+function! FindR()
+    "echo matchlist(line, 'R\..\{-}\..\{-}\>')
+    let word = expand('<cWORD>')
+    let results =  matchlist(word, 'R\.\([a-z0-9]*\)\.\([a-z0-9_]*\)')
+    if results[1] == 'id'
+        echo 'This is not happening.'
+    else
+        let path =  g:RoboProjectDir . 'res/' . results[1] . '/' .results[2] . '.xml'
+        exec 'edit ' .path
+    endif
+    
+endfunction
+
+
+
 
 "Set up vim stuff"
 command! -n=0 -bar RoboInit :call s:Init()
