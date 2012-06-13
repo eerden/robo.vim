@@ -125,6 +125,7 @@ function! s:Init()"{{{
     command! -n=0 -bar RoboGoToActivity :call s:GotoActivity()
     command! -n=0 -bar RoboUnInit :call s:UnInit()
     command! -n=0 -bar RoboActivityExplorer :call s:ShowActivities()
+    command! -n=0 -bar RoboFindRes :call s:FindRes()
     "Statusline
     set statusline+=%=[Robo]
 endfunction"}}}
@@ -156,7 +157,7 @@ function! s:ShowActivities()"{{{
     call append(0,"  Select activity (<Enter> : open)")
     call append(1,'-----------------------------------')
     for i in range(0, len(g:RoboActivityList) - 1)
-        call append(i+2, "  " . g:RoboActivityList[i])
+        call append(i+2, "    " . g:RoboActivityList[i])
     endfor
     setlocal buftype=nofile
     setlocal buftype=nowrite
@@ -171,10 +172,13 @@ function! s:ShowActivities()"{{{
     map <buffer> o :RoboGoToActivity<cr>
 endfunction"}}}
 
-function! FindR()"{{{
+function! s:FindRes()"{{{
     "echo matchlist(line, 'R\..\{-}\..\{-}\>')
     let word = expand('<cWORD>')
     let results =  matchlist(word, 'R\.\([a-z0-9]*\)\.\([a-z0-9_]*\)')
+    if len(results) == 0
+        return
+    endif
     if results[1] == 'id'
         echo 'This is not happening.'
     else
