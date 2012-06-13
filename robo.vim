@@ -103,7 +103,7 @@ function! s:OpenActivity(name)"{{{
 endfunction"}}}
 
 function! s:ListActivities(A,L,P)"{{{
-    return filter(g:RoboActivityList, 'v:val =~ "^' . a:A . '"')
+    return filter(g:RoboActivityList, 'v:val =~? "' . a:A . '"')
 endfunction"}}}
 
 function! s:Init()"{{{
@@ -142,6 +142,22 @@ function! s:UnInit()"{{{
     "Statusline
     set statusline-=%=[Robo]
 
+endfunction"}}}
+
+function! ShowActivities()"{{{
+    exec 'enew'
+    call append(0,"Select activity..")
+    call append(1,"<Enter> : open")
+    call append(2, g:RoboActivityList)
+    setlocal buftype=nofile
+    setlocal buftype=nowrite
+    setlocal noswapfile
+    setlocal nowrap
+    setlocal nobuflisted
+    setlocal nospell
+    setlocal foldcolumn=0
+    setlocal nomodifiable
+    map <buffer> <cr> :RoboGoToActivity<cr>
 endfunction"}}}
 
 "Set up vim stuff"
