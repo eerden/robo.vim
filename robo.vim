@@ -1,11 +1,13 @@
 "--------- Robo Helper ----------
-function! GotoActivity()
+function! s:GotoActivity()"{{{
+    if g:RoboLoaded == 0
+        echoerr "Robo not loaded!"
+        return
+    endif
     let currentWord =  expand('<cword>')
     let activity = substitute(currentWord, '^\.', '','')
     call s:OpenActivity(activity)
-    
-    
-endfunction
+endfunction"}}}
 
 function! s:GetActivityList(manifest)"{{{
     let manifestfile = readfile(a:manifest)
@@ -91,23 +93,55 @@ function! GetSrcPath()"{{{
 endfunction"}}}
 
 function! s:OpenActivity(name)"{{{
-    exec 'edit ' . g:RoboSrcPath. a:name . '.java'
+    
+   let filename =  g:RoboSrcPath. a:name . '.java'
+
+    exec 'edit ' .  filename
 endfunction"}}}
 
 function! s:ListActivities(A,L,P)"{{{
     return g:RoboActivityList 
 endfunction"}}}
 
-function! s:InitRobo()"{{{
+function! s:Init()"{{{
+    let g:RoboLoaded = 1
     let g:RoboManifestFile = SetManifestFile()  
     let g:RoboActivityList = s:GetActivityList(g:RoboManifestFile) 
     let g:RoboProjectDir = s:GetDirectories(g:RoboManifestFile)
     let g:RoboPackagePath = GetPackagePath(g:RoboManifestFile)
     let g:RoboSrcPath = GetSrcPath()
+
+    "Set up vim stuff"
+    command! -n=0 -bar RoboOpenManifest :call s:OpenManifestFile()
+    command! -n=1 -complete=customlist,s:ListActivities -bar RoboOpenActivity :call s:OpenActivity('<args>')
+    command! -n=0 -bar RoboGoToActivity :call s:GotoActivity()
+
 endfunction"}}}
 
-"Set up vim stuff"{{{
-command! -n=0 -bar RoboInit :call s:InitRobo()
-command! -n=0 -bar RoboOpenManifest :call s:OpenManifestFile()
-command! -n=1 -complete=customlist,s:ListActivities -bar RoboOpenActivity :call s:OpenActivity('<args>')
+function! s:UnInit()"{{{
+    unlet g:RoboLoaded
+    unlet g:RoboManifestFile
+    unlet g:RoboActivityList
+    unlet g:RoboProjectDir
+    unlet g:RoboPackagePath
+    unlet g:RoboSrcPath
+
+    "Set up vim stuff"
+    command! -n=0 -bar RoboOpenManifest :call s:OpenManifestFile()
+    command! -n=1 -complete=customlist,s:ListActivities -bar RoboOpenActivity :call s:OpenActivity('<args>')
+    command! -n=0 -bar RoboGoToActivity :call s:GotoActivity()
+
+    delcommand RoboOpenManifest
+    delcommand RoboOpenActivity
+    delcommand RoboGoToActivity
+endfunction"}}}
+
+function! s:ShowActivities()
+    
+
+endfunction
+
+
+"Set up vim stuff"
+command! -n=0 -bar RoboInit :call s:Init()
 "}}}
