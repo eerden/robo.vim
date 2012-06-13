@@ -124,6 +124,7 @@ function! s:Init()"{{{
     command! -n=1 -complete=customlist,s:ListActivities -bar RoboOpenActivity :call s:OpenActivity('<args>')
     command! -n=0 -bar RoboGoToActivity :call s:GotoActivity()
     command! -n=0 -bar RoboUnInit :call s:UnInit()
+    command! -n=0 -bar RoboActivityExplorer :call s:ShowActivities()
     "Statusline
     set statusline+=%=[Robo]
 endfunction"}}}
@@ -149,11 +150,14 @@ function! s:UnInit()"{{{
 
 endfunction"}}}
 
-function! ShowActivities()"{{{
+function! s:ShowActivities()"{{{
     exec 'enew'
-    call append(0,"Select activity..")
-    call append(1,"<Enter> : open")
-    call append(2, g:RoboActivityList)
+    "call append(0,"  Select activity (<Enter> : open) | s : sorting (manifest)")
+    call append(0,"  Select activity (<Enter> : open)")
+    call append(1,'-----------------------------------')
+    for i in range(0, len(g:RoboActivityList) - 1)
+        call append(i+2, "  " . g:RoboActivityList[i])
+    endfor
     setlocal buftype=nofile
     setlocal buftype=nowrite
     setlocal noswapfile
@@ -162,7 +166,9 @@ function! ShowActivities()"{{{
     setlocal nospell
     setlocal foldcolumn=0
     setlocal nomodifiable
+    setlocal nonumber
     map <buffer> <cr> :RoboGoToActivity<cr>
+    map <buffer> o :RoboGoToActivity<cr>
 endfunction"}}}
 
 function! FindR()"{{{
