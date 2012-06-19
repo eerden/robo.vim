@@ -188,6 +188,27 @@ function! s:FindRes()"{{{
     
 endfunction"}}}
 
+function! ShowEmulators(emulator)
+    exec 'enew'
+    "let avds = split(system('android list avd|grep -i name'),'\n')
+    let cmdResult = system('android list avd|grep -i name')
+    call setline(1, 'List of available virtual devices:')
+    call setline(2, cmdResult)
+
+    setlocal buftype=nofile
+    setlocal buftype=nowrite
+    setlocal noswapfile
+    setlocal nowrap
+    setlocal nobuflisted
+    setlocal nospell
+    setlocal foldcolumn=0
+    setlocal nomodifiable
+    setlocal nonumber
+
+
+endfunction
+
+
 
 "Set up vim stuff"
 command! -n=0 -bar RoboInit :call s:Init()
