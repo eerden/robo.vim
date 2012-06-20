@@ -188,13 +188,25 @@ function! s:FindRes()"{{{
     
 endfunction"}}}
 
-function! ShowEmulators(emulator)
+function! ShowEmulators()
+    let avdList = []
+    let avd = []
+    let avdDict = {}
     exec 'enew'
     "let avds = split(system('android list avd|grep -i name'),'\n')
-    let cmdResult = system('android list avd|grep -i name')
+    let cmdResult = system('android list avd')
     call setline(1, 'List of available virtual devices:')
-    call setline(2, cmdResult)
+    call setline(2, '--------------------------------------------------------------------------------')
+    let avdLines = split(cmdResult, '---------')
+    for line in avdLines
+        let avd= matchlist(line, 'Name: \(.\{-}\)\n\_.\{-}Target: \(.\{-}\)\n')
+        let avdList += [avd]
+    endfor
+    for avd in avdList
+       call append(2,'Name: '. avd[1]. "\t| Target: " . avd[2]) 
+    endfor
 
+    setlocal tabstop=9
     setlocal buftype=nofile
     setlocal buftype=nowrite
     setlocal noswapfile
@@ -204,10 +216,15 @@ function! ShowEmulators(emulator)
     setlocal foldcolumn=0
     setlocal nomodifiable
     setlocal nonumber
-
+    map <buffer> <cr> :call RunEmulator()<cr>
 
 endfunction
-
+function! RunEmulator()
+let line = getline(".")    
+let match = matchlist(line, '^Name: \(.\{-}\)\s') 
+let commandString = '!emulator @' . match[1] . "&"
+exec commandString
+endfunction
 
 
 "Set up vim stuff"
