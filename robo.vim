@@ -1,4 +1,5 @@
-"--------- Robo Helper ----------
+"--------- Robo ----------
+"Android plugin for Vim.
 function! s:GotoActivity()"{{{
     if g:RoboLoaded == 0
         echoerr "Robo not loaded!"
@@ -59,7 +60,7 @@ function! s:GetActivities(manifest)"{{{
     return activities
 endfunction"}}}
 
-function! SetManifestFile()"{{{
+function! s:SetManifestFile()"{{{
     let manifest =  input("Manifest Location: ", "", "file")
     if(len(manifest) != 0)
         return manifest
@@ -78,7 +79,7 @@ function! s:OpenManifestFile()"{{{
     exec 'edit ' .  g:RoboManifestFile
 endfunction"}}}
 
-function! GetPackagePath(manifest)"{{{
+function! s:GetPackagePath(manifest)"{{{
     let manifestfile = readfile(a:manifest)
     for line in manifestfile
         let packagename = matchlist(line,'package="\(.\{-}\)"' )
@@ -88,8 +89,8 @@ function! GetPackagePath(manifest)"{{{
     endfor
 endfunction"}}}
 
-function! GetSrcDir()"{{{
-   return g:RoboProjectDir . 'src/' . GetPackagePath(g:RoboManifestFile) 
+function! s:GetSrcDir()"{{{
+   return g:RoboProjectDir . 'src/' . s:GetPackagePath(g:RoboManifestFile) 
 endfunction"}}}
 
 function! s:OpenActivity(name)"{{{
@@ -104,51 +105,6 @@ endfunction"}}}
 
 function! s:ListActivities(A,L,P)"{{{
     return filter(g:RoboActivityList, 'v:val =~? "' . a:A . '"')
-endfunction"}}}
-
-function! s:Init()"{{{
-    let g:RoboLoaded = 1
-    let g:RoboManifestFile = SetManifestFile()  
-    let g:RoboActivityList = s:GetActivityList(g:RoboManifestFile) 
-    let g:RoboProjectDir = s:GetDirectories(g:RoboManifestFile)
-    let g:RoboAntBuildFile =  g:RoboProjectDir . 'build.xml'
-    let g:RoboPackagePath = GetPackagePath(g:RoboManifestFile)
-    let g:RoboSrcDir = GetSrcDir()
-    let g:RoboResDir = g:RoboProjectDir . 'res/' 
-    set makeprg=ant\ -emacs\ -find\ build.xml
-    set efm=%A\ %#[javac]\ %f:%l:\ %m,%-Z\ %#[javac]\ %p^,%-C%.%#
-
-    "Set up vim stuff"
-    "Commands
-    command! -n=0 -bar RoboOpenManifest :call s:OpenManifestFile()
-    command! -n=1 -complete=customlist,s:ListActivities -bar RoboOpenActivity :call s:OpenActivity('<args>')
-    command! -n=0 -bar RoboGoToActivity :call s:GotoActivity()
-    command! -n=0 -bar RoboUnInit :call s:UnInit()
-    command! -n=0 -bar RoboActivityExplorer :call s:ShowActivities()
-    command! -n=0 -bar RoboFindRes :call s:FindRes()
-    "Statusline
-    set statusline+=%=[Robo]
-endfunction"}}}
-
-function! s:UnInit()"{{{
-    unlet g:RoboLoaded
-    unlet g:RoboManifestFile
-    unlet g:RoboActivityList
-    unlet g:RoboProjectDir
-    unlet g:RoboPackagePath
-    unlet g:RoboSrcDir
-    unlet g:RoboResDir
-
-    "Set up vim stuff"
-    "Commands
-    delcommand RoboOpenManifest
-    delcommand RoboOpenActivity
-    delcommand RoboGoToActivity
-    delcommand RoboUnInit
-
-    "Statusline
-    set statusline-=%=[Robo]
-
 endfunction"}}}
 
 function! s:ShowActivities()"{{{
@@ -188,7 +144,7 @@ function! s:FindRes()"{{{
     
 endfunction"}}}
 
-function! ShowEmulators()
+function! s:ShowEmulators()"{{{
     let avdList = []
     let avd = []
     let avdDict = {}
@@ -203,7 +159,7 @@ function! ShowEmulators()
         let avdList += [avd]
     endfor
     for avd in avdList
-       call append(2,'Name: '. avd[1]. "\t| Target: " . avd[2]) 
+        call append(2,'Name: '. avd[1]. "\t| Target: " . avd[2]) 
     endfor
 
     setlocal tabstop=9
@@ -218,13 +174,59 @@ function! ShowEmulators()
     setlocal nonumber
     map <buffer> <cr> :call RunEmulator()<cr>
 
-endfunction
-function! RunEmulator()
-let line = getline(".")    
-let match = matchlist(line, '^Name: \(.\{-}\)\s') 
-let commandString = '!emulator @' . match[1] . "&"
-exec commandString
-endfunction
+endfunction"}}}
+
+function! s:RunEmulator()"{{{
+    let line = getline(".")    
+    let match = matchlist(line, '^Name: \(.\{-}\)\s') 
+    let commandString = '!emulator @' . match[1] . "&"
+    exec commandString
+endfunction"}}}
+
+function! s:Init()"{{{
+    let g:RoboLoaded = 1
+    let g:RoboManifestFile = s:SetManifestFile()  
+    let g:RoboActivityList = s:GetActivityList(g:RoboManifestFile) 
+    let g:RoboProjectDir = s:GetDirectories(g:RoboManifestFile)
+    let g:RoboAntBuildFile =  g:RoboProjectDir . 'build.xml'
+    let g:RoboPackagePath = s:GetPackagePath(g:RoboManifestFile)
+    let g:RoboSrcDir = s:GetSrcDir()
+    let g:RoboResDir = g:RoboProjectDir . 'res/' 
+    set makeprg=ant\ -emacs\ -find\ build.xml
+    set efm=%A\ %#[javac]\ %f:%l:\ %m,%-Z\ %#[javac]\ %p^,%-C%.%#
+
+    "Set up vim stuff"
+    "Commands
+    command! -n=0 -bar RoboOpenManifest :call s:OpenManifestFile()
+    command! -n=1 -complete=customlist,s:ListActivities -bar RoboOpenActivity :call s:OpenActivity('<args>')
+    command! -n=0 -bar RoboGoToActivity :call s:GotoActivity()
+    command! -n=0 -bar RoboUnInit :call s:UnInit()
+    command! -n=0 -bar RoboActivityExplorer :call s:ShowActivities()
+    command! -n=0 -bar RoboFindRes :call s:FindRes()
+    "Statusline
+    set statusline+=%=[Robo]
+endfunction"}}}
+
+function! s:UnInit()"{{{
+    unlet g:RoboLoaded
+    unlet g:RoboManifestFile
+    unlet g:RoboActivityList
+    unlet g:RoboProjectDir
+    unlet g:RoboPackagePath
+    unlet g:RoboSrcDir
+    unlet g:RoboResDir
+
+    "Set up vim stuff"
+    "Commands
+    delcommand RoboOpenManifest
+    delcommand RoboOpenActivity
+    delcommand RoboGoToActivity
+    delcommand RoboUnInit
+
+    "Statusline
+    set statusline-=%=[Robo]
+
+endfunction"}}}
 
 
 "Set up vim stuff"
