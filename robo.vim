@@ -1,5 +1,6 @@
 "--------- Robo ----------
 "Android plugin for Vim.
+
 function! s:GotoActivity()"{{{
     if g:RoboLoaded == 0
         echoerr "Robo not loaded!"
@@ -187,6 +188,7 @@ function! s:RunEmulator()"{{{
 endfunction"}}}
 
 function! s:Init()"{{{
+    "Set globals
     let g:RoboLoaded = 1
     let g:RoboManifestFile = s:SetManifestFile()  
     let g:RoboActivityList = s:GetActivityList(g:RoboManifestFile) 
@@ -198,15 +200,31 @@ function! s:Init()"{{{
     set makeprg=ant\ -emacs\ -find\ build.xml
     set efm=%A\ %#[javac]\ %f:%l:\ %m,%-Z\ %#[javac]\ %p^,%-C%.%#
 
-    "Set up vim stuff"
-    "Commands
+    "Set commands
     command! -n=0 -bar RoboOpenManifest :call s:OpenManifestFile()
     command! -n=1 -complete=customlist,s:ListActivities -bar RoboOpenActivity :call s:OpenActivity('<args>')
     command! -n=0 -bar RoboGoToActivity :call s:GotoActivity()
     command! -n=0 -bar RoboUnInit :call s:UnInit()
     command! -n=0 -bar RoboActivityExplorer :call s:ShowActivities()
-    command! -n=0 -bar RoboFindRes :call s:FindRes()
+    command! -n=0 -bar RoboGoToResource :call s:FindRes()
     command! -n=0 -bar RoboRunEmulator :call <SID>ShowEmulators()
+
+    "Set mappings
+    nnoremap <Leader>rae :RoboActivityExplorer<cr>
+    nnoremap <Leader>rom :RoboOpenManifest<cr>
+    nnoremap <Leader>rga :RoboGoToActivity<cr>
+    nnoremap <Leader>rgr :RoboGoToResource<cr>
+    nnoremap <Leader>rre :RoboRunEmulator<cr>
+
+    nnoremap <Leader>rdi :make debug install<cr>
+    nnoremap <Leader>rdb :make debug<cr>
+    nnoremap <Leader>rri :make release install<cr>
+    nnoremap <Leader>rrb :make release<cr>
+
+    nnoremap <Leader>rcl :make clean<cr>
+    nnoremap <Leader>rui :make uninstall<cr>
+    
+
 
     "Statusline
     set statusline+=%=[Robo]
