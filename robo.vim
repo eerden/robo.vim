@@ -172,15 +172,18 @@ function! s:ShowEmulators()"{{{
     setlocal foldcolumn=0
     setlocal nomodifiable
     setlocal nonumber
-    map <buffer> <cr> :call RunEmulator()<cr>
+    map <buffer> <silent> <cr> :call <SID>RunEmulator()<cr>
 
 endfunction"}}}
 
 function! s:RunEmulator()"{{{
     let line = getline(".")    
     let match = matchlist(line, '^Name: \(.\{-}\)\s') 
-    let commandString = '!emulator @' . match[1] . "&"
-    exec commandString
+    let commandString = 'emulator @' . match[1] . " &"
+    let err = system('emulator @' . match[1] . " &")
+    if err != ''
+        echo err
+    endif
 endfunction"}}}
 
 function! s:Init()"{{{
@@ -203,6 +206,8 @@ function! s:Init()"{{{
     command! -n=0 -bar RoboUnInit :call s:UnInit()
     command! -n=0 -bar RoboActivityExplorer :call s:ShowActivities()
     command! -n=0 -bar RoboFindRes :call s:FindRes()
+    command! -n=0 -bar RoboRunEmulator :call <SID>ShowEmulators()
+
     "Statusline
     set statusline+=%=[Robo]
 endfunction"}}}
@@ -222,6 +227,7 @@ function! s:UnInit()"{{{
     delcommand RoboOpenActivity
     delcommand RoboGoToActivity
     delcommand RoboUnInit
+    delcommand RoboRunEmulator
 
     "Statusline
     set statusline-=%=[Robo]
