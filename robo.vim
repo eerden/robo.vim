@@ -257,7 +257,30 @@ function! s:UnInit()"{{{
 
 endfunction"}}}
 
+function! AddActivity()
+    let activityName =  input("Activity name: ")
+    let activityFileName  = activityName . '.java'
+    let template = []
+    "let template = ['package ' .g:RoboPackageName .';', 'public class '.activityName .' extends Activity {',' ', '}']
+    let template += ['package ' .g:RoboPackageName .';']
+    let template += ['']
+    let template += ['import android.app.Activity;']
+    let template += ['import android.os.Bundle;']
+    let template += ['public class '.activityName .' extends Activity {']
+    let template += ['@Override']
+    let template += ['public void onCreate(Bundle SavedInstanceState){']
+    let template += ['super.onCreate(SavedInstanceState);']
+    let template += ['}']
+    let template += ['']
+    let template += ['}']
+    "exec 'e ' . g:RoboSrcDir . activityName . '.java'
+    call writefile(template, activityFileName)
+    exec 'e '.activityFileName
+    exec 'normal gg=G'
+    exec 'w'
+
+endfunction
 
 "Set up vim stuff"
 command! -n=0 -bar RoboInit :call s:Init()
-"}}}
+ "}}}
