@@ -80,14 +80,8 @@ function! s:OpenManifestFile()"{{{
     exec 'edit ' .  g:RoboManifestFile
 endfunction"}}}
 
-function! s:GetPackagePath(manifest)"{{{
-    let manifestfile = readfile(a:manifest)
-    for line in manifestfile
-        let packagename = matchlist(line,'package="\(.\{-}\)"' )
-        if len(packagename) > 0
-            return substitute(packagename[1],'\.','/', 'g').'/'
-        endif
-    endfor
+function! s:GetPackagePath(packageName)"{{{
+    return substitute(a:packageName,'\.','/', 'g').'/'
 endfunction"}}}
 
 function! s:GetPackageName(manifest)
@@ -205,8 +199,8 @@ function! s:Init()"{{{
     let g:RoboActivityList = s:GetActivityList(g:RoboManifestFile) 
     let g:RoboProjectDir = s:GetDirectories(g:RoboManifestFile)
     let g:RoboAntBuildFile =  g:RoboProjectDir . 'build.xml'
-    let g:RoboPackagePath = s:GetPackagePath(g:RoboManifestFile)
     let g:RoboPackageName = s:GetPackageName(g:RoboManifestFile)
+    let g:RoboPackagePath = s:GetPackagePath(g:RoboPackageName)
     let g:RoboSrcDir = s:GetSrcDir()
     let g:RoboResDir = g:RoboProjectDir . 'res/' 
     set makeprg=ant\ -emacs\ -find\ build.xml
