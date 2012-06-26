@@ -1,5 +1,5 @@
 "--------- Robo ----------
-"Android plugin for Vim.
+"An Android plugin for Vim.
 
 function! s:GotoActivity()"{{{
     if g:RoboLoaded == 0
@@ -213,6 +213,7 @@ function! s:Init()"{{{
     command! -n=0 -bar RoboActivityExplorer :call s:ShowActivities()
     command! -n=0 -bar RoboGoToResource :call s:FindRes()
     command! -n=0 -bar RoboRunEmulator :call <SID>ShowEmulators()
+    command! -n=0 -bar RoboAddActivity :call <SID>AddActivity()
 
     "Set mappings
     nnoremap <Leader>rae :RoboActivityExplorer<cr>
@@ -257,16 +258,22 @@ function! s:UnInit()"{{{
 
 endfunction"}}}
 
-function! AddActivity()
+function! s:AddActivity()"{{{
     let activityName =  input("Activity name: ")
-    let activityFileName  = activityName . '.java'
+    call s:AddActivityToManifest(activityName)
+    call s:AddActivityFile(activityName)
+    "Update the list so the new activity is available.
+    let g:RoboActivityList = s:GetActivityList(g:RoboManifestFile) 
+endfunction"}}}
+
+function! s:AddActivityFile(activityName)"{{{
+    let activityFileName  = a:activityName . '.java'
     let template = []
-    "let template = ['package ' .g:RoboPackageName .';', 'public class '.activityName .' extends Activity {',' ', '}']
-    let template += ['package ' .g:RoboPackageName .';']
+    let template += ['package ' . g:RoboPackageName .';']
     let template += ['']
     let template += ['import android.app.Activity;']
     let template += ['import android.os.Bundle;']
-    let template += ['public class '.activityName .' extends Activity {']
+    let template += ['public class '. a:activityName .' extends Activity {']
     let template += ['@Override']
     let template += ['public void onCreate(Bundle SavedInstanceState){']
     let template += ['super.onCreate(SavedInstanceState);']
@@ -274,12 +281,25 @@ function! AddActivity()
     let template += ['']
     let template += ['}']
     "exec 'e ' . g:RoboSrcDir . activityName . '.java'
-    call writefile(template, activityFileName)
-    exec 'e '.activityFileName
+    let filePath = g:RoboSrcDir . activityFileName
+    call writefile(template, filePath)
+    exec 'e '.filePath
     exec 'normal gg=G'
     exec 'w'
 
-endfunction
+endfunction"}}}
+
+function! s:AddActivityToManifest(activityName)"{{{
+    let manifest = readfile(g:RoboManifestFile)
+    let index = match(manifest, '\/application>')
+    call insert(manifest, '<activity android:name=".' . a:activityName . '"></activity>', index)
+    if filewritable(g:RoboManifestFile) > 0
+        call writefile(manifest, g:RoboManifestFile)
+    endif
+    exec 'e ' . g:RoboManifestFile
+    exec 'normal gg=G'
+    exec 'w'
+endfunc"}}}
 
 "Set up vim stuff"
 command! -n=0 -bar RoboInit :call s:Init()
