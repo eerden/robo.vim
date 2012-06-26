@@ -90,6 +90,17 @@ function! s:GetPackagePath(manifest)"{{{
     endfor
 endfunction"}}}
 
+function! s:GetPackageName(manifest)
+    let manifestfile = readfile(a:manifest)
+    for line in manifestfile
+        let packagename = matchlist(line,'package="\(.\{-}\)"' )
+        if len(packagename) > 0
+            return packagename[1]
+        endif
+    endfor
+endfunction
+
+
 function! s:GetSrcDir()"{{{
    return g:RoboProjectDir . 'src/' . s:GetPackagePath(g:RoboManifestFile) 
 endfunction"}}}
@@ -195,6 +206,7 @@ function! s:Init()"{{{
     let g:RoboProjectDir = s:GetDirectories(g:RoboManifestFile)
     let g:RoboAntBuildFile =  g:RoboProjectDir . 'build.xml'
     let g:RoboPackagePath = s:GetPackagePath(g:RoboManifestFile)
+    let g:RoboPackageName = s:GetPackageName(g:RoboManifestFile)
     let g:RoboSrcDir = s:GetSrcDir()
     let g:RoboResDir = g:RoboProjectDir . 'res/' 
     set makeprg=ant\ -emacs\ -find\ build.xml
