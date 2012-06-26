@@ -84,7 +84,7 @@ function! s:GetPackagePath(packageName)"{{{
     return substitute(a:packageName,'\.','/', 'g').'/'
 endfunction"}}}
 
-function! s:GetPackageName(manifest)
+function! s:GetPackageName(manifest)"{{{
     let manifestfile = readfile(a:manifest)
     for line in manifestfile
         let packagename = matchlist(line,'package="\(.\{-}\)"' )
@@ -92,11 +92,10 @@ function! s:GetPackageName(manifest)
             return packagename[1]
         endif
     endfor
-endfunction
-
+endfunction"}}}
 
 function! s:GetSrcDir()"{{{
-   return g:RoboProjectDir . 'src/' . s:GetPackagePath(g:RoboManifestFile) 
+   return g:RoboProjectDir . 'src/' . g:RoboPackagePath 
 endfunction"}}}
 
 function! s:OpenActivity(name)"{{{
