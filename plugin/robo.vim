@@ -95,7 +95,7 @@ function! s:GetPackageName(manifest)"{{{
 endfunction"}}}
 
 function! s:GetSrcDir()"{{{
-   return g:RoboProjectDir . 'src/' . g:RoboPackagePath 
+   return g:RoboProjectDir . 'src/' . s:RoboPackagePath 
 endfunction"}}}
 
 function! s:OpenActivity(name)"{{{
@@ -199,7 +199,7 @@ function! s:Init()"{{{
     let g:RoboProjectDir = s:GetDirectories(g:RoboManifestFile)
     let g:RoboAntBuildFile =  g:RoboProjectDir . 'build.xml'
     let g:RoboPackageName = s:GetPackageName(g:RoboManifestFile)
-    let g:RoboPackagePath = s:GetPackagePath(g:RoboPackageName)
+    let s:RoboPackagePath = s:GetPackagePath(g:RoboPackageName)
     let g:RoboSrcDir = s:GetSrcDir()
     let g:RoboResDir = g:RoboProjectDir . 'res/' 
     set makeprg=ant\ -emacs\ -find\ build.xml
@@ -241,7 +241,7 @@ function! s:UnInit()"{{{
     unlet g:RoboManifestFile
     unlet g:RoboActivityList
     unlet g:RoboProjectDir
-    unlet g:RoboPackagePath
+    unlet s:RoboPackagePath
     unlet g:RoboSrcDir
     unlet g:RoboResDir
 
