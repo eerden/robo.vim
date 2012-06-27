@@ -1,0 +1,117 @@
+*robo.txt*  Android plugin for Vim.
+==============================================================================
+RRRRRRRRRRRRRRRR         OOOOOOOO      BBBBBBBBBBBBBBBB         OOOOOOOO     
+R:::::::::::::::R      OO::::::::OO    B:::::::::::::::B      OO::::::::OO   
+R::::::RRRRRR::::R   OO::::::::::::OO  B:::::BBBBBB:::::B   OO::::::::::::OO 
+RR:::::R     R::::R O:::::::OO:::::::O BB::::B     B:::::B O:::::::OO:::::::O
+  R::::R     R::::R O::::::O  O::::::O   B:::B     B:::::B O::::::O  O::::::O
+  R::::R     R::::R O:::::O    O:::::O   B:::B     B:::::B O:::::O    O:::::O
+  R::::RRRRRR::::R  O:::::O    O:::::O   B:::BBBBBB:::::B  O:::::O    O:::::O
+  R::::::::::::RR   O:::::O    O:::::O   B::::::::::::BB   O:::::O    O:::::O
+  R::::RRRRRR::::R  O:::::O    O:::::O   B:::BBBBBB:::::B  O:::::O    O:::::O
+  R::::R     R::::R O:::::O    O:::::O   B:::B     B:::::B O:::::O    O:::::O
+  R::::R     R::::R O:::::O    O:::::O   B:::B     B:::::B O:::::O    O:::::O
+  R::::R     R::::R O::::::O  O::::::O   B:::B     B:::::B O::::::O  O::::::O
+RR:::::R     R::::R O:::::::OO:::::::O BB::::BBBBBB::::::B O:::::::OO:::::::O
+R::::::R     R::::R  OO::::::::::::OO  B::::::::::::::::B   OO::::::::::::OO 
+R::::::R     R::::R    OO::::::::OO    B:::::::::::::::B      OO::::::::OO   
+RRRRRRRR     RRRRRR      OOOOOOOO      BBBBBBBBBBBBBBBB         OOOOOOOO     
+==============================================================================
+
+
+1.  |Initialization|
+==============================================================================
+    1.1      |Starting|
+    1.2      |Exiting|
+
+2.  |Commands|
+==============================================================================
+    2.1      |RoboInit|
+    2.2      |RoboUnInit|
+    2.3      |RoboOpenManifest|
+    2.4      |RoboOpenActivity|
+    2.6      |RoboGoToActivity|
+    2.7      |RoboActivityExplorer|
+    2.8      |RoboGoToResource|
+    2.9      |RoboRunEmulator|
+    2.10     |RoboAddActivity|
+
+3.  |Variables|
+==============================================================================
+    3.1     |g:RoboLoaded|
+    3.1     |g:RoboManifestFile|
+
+==============================================================================
+
+
+
+1. Initialization~
+                                                              *Initialization*
+    1.1. Starting~
+                                                                    *Starting*
+    Robo has to be sarted manually. |RoboInit| command is used  to start Robo.
+
+    1.2. Exiting~
+                                                                     *Exiting*
+    RoboUnInit can be used to deactivate the script. It removes all the
+    commands except RoboInit.
+
+2. Commands~
+
+    2.1. RoboInit~
+                                                                    *RoboInit* 
+    Invoking this command will ask for the AndroidManifest.xml file. It
+    will register all Robo commands and populate the global variables used by
+    the plugin.
+
+        |g:RoboLoaded|
+        |g:RoboManifestFile|
+        |g:RoboActivityList|
+        |g:RoboProjectDir|
+        |g:RoboAntBuildFile|
+        |g:RoboPackageName|
+        |g:RoboSrcDir|
+        |g:RoboResDir|
+        |makeprg|
+        |efm|
+
+    2.2. RoboUnInit~
+                                                                  *RoboUnInit*
+    Disables the plugin.
+
+3. Variables~
+
+    3.1. *g:RoboLoaded*
+                                                   
+    If plugin is active this variable is 1. 
+
+    3.2. *g:RoboManifestFile*
+
+    A string that holds the full path to the AndroidManifest.xml file ie:
+    '/home/timmayy/android/fasterTeleport/AndroidManifest.xml'
+
+    3.3. *g:RoboActivityList*
+
+    A list holding the activities found in the manifest file.
+    
+    3.4. *g:RoboProjectDir*
+
+    A string holding the name of the project directory. This is where the
+    manifest file is.
+
+    3.5. *g:RoboAntBuildFile*
+
+    A string holding the full path to the build.xml file.
+
+    3.6. *g:RoboPackageName*
+
+    A string holding the package name declared in the manifest file.
+
+    3.6. *g:RoboSrcDir*
+    
+    A string holding the path to directory to the source files. It assumes
+    source files are in:
+        
+        g:RoboProjectDir/src/your/package/name/
+
+
