@@ -39,7 +39,15 @@ RRRRRRRR     RRRRRR      OOOOOOOO      BBBBBBBBBBBBBBBB         OOOOOOOO
 3.  |Variables|
 ==============================================================================
     3.1     |g:RoboLoaded|
-    3.1     |g:RoboManifestFile|
+    3.2     |g:RoboManifestFile|
+    3.3     |g:RoboActivityList|
+    3.4     |g:RoboProjectDir|
+    3.5     |g:RoboAntBuildFile|
+    3.6     |g:RoboPackageName|
+    3.7     |g:RoboSrcDir|
+    3.8     |g:RoboResDir|
+    3.9     |makeprg|
+    3.10    |efm|
 
 ==============================================================================
 
@@ -75,9 +83,57 @@ RRRRRRRR     RRRRRR      OOOOOOOO      BBBBBBBBBBBBBBBB         OOOOOOOO
         |makeprg|
         |efm|
 
-    2.2. RoboUnInit~
-                                                                  *RoboUnInit*
+    2.2. *RoboUnInit*
+
     Disables the plugin.
+
+    2.3. *RoboOpenManifest*
+
+    Opens the manifest file.
+
+    2.4. *RoboOpenActivity*
+
+    Opens the source file for the given activity name from Vim command line.
+
+    2.5. *RoboGoToActivity*
+
+    Goes to the source file for the activity name under the cursor. Works like
+    'gf'.
+
+    2.6. *RoboActivityExplorer*
+
+    Shows a list of activities from the manifest. Pressing <CR> goes to the
+    activity under the cursor.
+
+    2.7. *RoboGoToResource*
+
+    Goes to the xml resource file for  under the cursor. Works like 'gf'.
+
+    2.8. *RoboGoRunEmulator*
+
+    Shows a list of available virtual devices. Pressing <CR> starts the device
+    under the cursor.
+
+    2.9. *RoboAddActivity*
+
+    Adds a source file for the name given as the input. The package name is
+    grabbed from manifest and By default the new class will extend Activity.
+    
+    Here's what the file looks like:
+>
+    package erden.stagefast;
+
+    import android.app.Activity;
+    import android.os.Bundle;
+    public class UploadActivity extends Activity {
+        @Override
+        public void onCreate(Bundle SavedInstanceState){
+            super.onCreate(SavedInstanceState);
+        }
+
+    }
+<    
+
 
 3. Variables~
 
@@ -107,12 +163,33 @@ RRRRRRRR     RRRRRR      OOOOOOOO      BBBBBBBBBBBBBBBB         OOOOOOOO
 
     A string holding the package name declared in the manifest file.
 
-    3.6. *g:RoboSrcDir*
+    3.7. *g:RoboSrcDir*
     
     A string holding the path to directory to the source files. It assumes
     source files are in:
         
         g:RoboProjectDir/src/your/package/name/
+
+    3.8. *g:RoboResDir*
+    
+    A string holding the path to directory to the resource files. It assumes
+    resource files are in:
+        
+        g:RoboProjectDir/res/
+
+    3.9. *makeprg*
+
+    Make program is set to:
+
+        'ant -emacs -find build.xml'
+
+    3.10. *efm*
+
+    Error format is set to:
+
+        '%A\ %#[javac]\ %f:%l:\ %m,%-Z\ %#[javac]\ %p^,%-C%.%#'
+
+    
 
 
 vim:tw=78:ts=8:ft=help:norl:iskeyword+=\:
