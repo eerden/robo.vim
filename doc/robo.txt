@@ -49,25 +49,28 @@ RRRRRRRR     RRRRRR      OOOOOOOO      BBBBBBBBBBBBBBBB         OOOOOOOO
     3.9     |makeprg|
     3.10    |efm|
 
-==============================================================================
+4. |Compiling|
+
+-----------------------------------------------------------------------------
 
 
 
-1. Initialization~
-                                                              *Initialization*
-    1.1. Starting~
-                                                                    *Starting*
+1. *Initialization*
+===============================================================================
+                  
+    1.1. *Starting*
     Robo has to be sarted manually. |RoboInit| command is used  to start Robo.
 
-    1.2. Exiting~
-                                                                     *Exiting*
+    1.2. *Exiting*
+                 
     RoboUnInit can be used to deactivate the script. It removes all the
     commands except RoboInit.
 
-2. Commands~
+2. *Commands*
+===============================================================================
 
-    2.1. RoboInit~
-                                                                    *RoboInit* 
+    2.1. *RoboInit*
+                  
     Invoking this command will ask for the AndroidManifest.xml file. It
     will register all Robo commands and populate the global variables used by
     the plugin.
@@ -135,8 +138,8 @@ RRRRRRRR     RRRRRR      OOOOOOOO      BBBBBBBBBBBBBBBB         OOOOOOOO
 <    
 
 
-3. Variables~
-
+3. *Variables* 
+===============================================================================
     3.1. *g:RoboLoaded*
                                                    
     If plugin is active this variable is 1. 
@@ -181,7 +184,9 @@ RRRRRRRR     RRRRRR      OOOOOOOO      BBBBBBBBBBBBBBBB         OOOOOOOO
 
     Make program is set to:
 
-        'ant -emacs -find build.xml'
+        'ant -emacs -buildfile' . g:RoboAntBuildFile
+
+    See: |Compiling|.
 
     3.10. *efm*
 
@@ -189,7 +194,24 @@ RRRRRRRR     RRRRRR      OOOOOOOO      BBBBBBBBBBBBBBBB         OOOOOOOO
 
         '%A\ %#[javac]\ %f:%l:\ %m,%-Z\ %#[javac]\ %p^,%-C%.%#'
 
-    
+4. *Compiling*    
+===============================================================================
+    Since 'makepgrg' is set to ant, these should work asexpected:
+>
+    :make debug install 
+    :make debug
+    :make installd
+<
+
+All available ant targets should work.
+
+
+
+
+
+
+
+
 
 
 vim:tw=78:ts=8:ft=help:norl:iskeyword+=\:
