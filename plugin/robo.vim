@@ -301,6 +301,57 @@ function! s:AddActivityToManifest(activityName)"{{{
     exec 'w'
 endfunc"}}}
 
+function! s:FindImport()"{{{
+    "Todo: Have to create this file manually, find a solution.
+    let importList = readfile($VIM . '/vimfiles/plugin/android_package_list')
+    let name = expand('<cword>')
+    let result = []
+    for line in importList
+        let match =  matchlist(line, '.*\.\(' . name . '\)$')
+        if len(match) > 0
+            let result += [match[0]]
+        endif
+    endfor
+
+    "There's no result, return empty list.
+    if len(result) < 1
+        return result
+    endif
+
+    "There's only one result, return it.
+    if len(result) < 2
+        return result[0]
+    endif
+
+    "More than one match, let the user select.
+    if len(result) > 1
+        let index = 0
+        echo "Select import statement (<Ctrl-c> to cancel)"
+        echo "-----------------------"
+        for line in result
+            echo index . " : " line
+            let index += 1
+        endfor
+        echo "-----------------------"
+        let input = input("Enter number:")
+        return result[input]
+    endif
+endfunction"}}}
+
+function! InsertMissingInput()"{{{
+    let missingImport = s:FindImport()
+
+    if len(missingImport) < 1
+        echo "Can't find anything to import."
+        return
+    endif
+    if search('import.\{-}' . missingImport) > 0 
+        echo "Import already exists."
+        return
+    endif
+    call append(2,'import ' . missingImport . ';')
+endfunction"}}}
+
 "Set up vim stuff"
 command! -n=0 -bar RoboInit :call s:Init()
  "}}}
