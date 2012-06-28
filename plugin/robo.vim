@@ -202,7 +202,7 @@ function! s:Init()"{{{
     let s:RoboPackagePath = s:GetPackagePath(g:RoboPackageName)
     let g:RoboSrcDir = s:GetSrcDir()
     let g:RoboResDir = g:RoboProjectDir . 'res/' 
-    set makeprg=ant\ -emacs\ -find\ build.xml
+    let &makeprg="ant -emacs -buildfile " . g:RoboAntBuildFile
     set efm=%A\ %#[javac]\ %f:%l:\ %m,%-Z\ %#[javac]\ %p^,%-C%.%#
 
     "Set commands
