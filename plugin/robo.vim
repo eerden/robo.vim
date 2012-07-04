@@ -214,6 +214,7 @@ function! s:Init()"{{{
     command! -n=0 -bar RoboGoToResource :call s:FindRes()
     command! -n=0 -bar RoboRunEmulator :call <SID>ShowEmulators()
     command! -n=0 -bar RoboAddActivity :call <SID>AddActivity()
+    command! -n=0 -bar RoboInsertMissingImport :call <SID>InsertMissingImport()
 
     "Set mappings
     nnoremap <Leader>rae :RoboActivityExplorer<cr>
@@ -338,7 +339,7 @@ function! s:FindImport()"{{{
     endif
 endfunction"}}}
 
-function! InsertMissingInput()"{{{
+function! s:InsertMissingImport()"{{{
     let missingImport = s:FindImport()
 
     if len(missingImport) < 1
