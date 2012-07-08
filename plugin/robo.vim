@@ -353,6 +353,29 @@ function! s:InsertMissingImport()"{{{
     call append(2,'import ' . missingImport . ';')
 endfunction"}}}
 
+function! CreateClassIndex()
+    call system('jar -tf android.jar | grep \.class$ > classes_unfiltered')
+    if v:shell_error > 0
+        echoerr 'Error in jar command'
+        return
+    endif
+    call system('sed s/\[\$\/]/\./g classes_unfiltered > classes') 
+    if v:shell_error > 0
+        echoerr 'Error in sed command'
+        system('rm classes_unfiltered')
+        if v:shell_error > 0
+            echoerr 'Couldn't delete file: "classes_unfiltered"'
+        endif
+        return
+    endif
+
+    call system('rm classes_unfiltered')
+    if v:shell_error > 0
+        echoerr 'Error in sed command'
+        return
+    endif
+endfunction
+
 "Set up vim stuff"
 command! -n=0 -bar RoboInit :call s:Init()
  "}}}
