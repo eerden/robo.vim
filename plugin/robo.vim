@@ -10,6 +10,17 @@ function! s:GotoActivity()"{{{
     let activity = substitute(currentWord, '^\.', '','')
     call s:OpenActivity(activity)
 endfunction"}}}
+function s:GetSdkTarget(manifest)
+    let targetSdk = []
+    let manifestFile = readfile(a:manifest)
+    for line in manifestFile
+        "let targetSdk = matchlist(line, 'android:minSdkVersion.\{-}=.\{-}["\']\([0-9]\).\{-}["\']'
+        let targetSdk = matchlist(line, 'android:minSdkVersion.\{-}\([0-9][0-9]\)')
+        if len(targetSdk) > 0
+            return targetSdk[1]
+        endif
+    endfor
+endfunction
 
 function! s:GetActivityList(manifest)"{{{
     let manifestfile = readfile(a:manifest)
@@ -202,6 +213,7 @@ function! s:Init()"{{{
     let s:RoboPackagePath = s:GetPackagePath(g:RoboPackageName)
     let g:RoboSrcDir = s:GetSrcDir()
     let g:RoboResDir = g:RoboProjectDir . 'res/' 
+    let g:RoboMinSdkVersion = s:GetSdkTarget(g:RoboManifestFile)
     let &makeprg="ant -emacs -buildfile " . g:RoboAntBuildFile
     set efm=%A\ %#[javac]\ %f:%l:\ %m,%-Z\ %#[javac]\ %p^,%-C%.%#
 
@@ -304,7 +316,7 @@ endfunc"}}}
 
 function! s:FindImport()"{{{
     "Todo: Have to create this file manually, find a solution.
-    let importList = readfile($VIM . '/vimfiles/plugin/android_package_list')
+    let importList = readfile(g:RoboProjectDir . 'classes')
     let name = expand('<cword>')
     let result = []
     for line in importList
@@ -353,28 +365,32 @@ function! s:InsertMissingImport()"{{{
     call append(2,'import ' . missingImport . ';')
 endfunction"}}}
 
-function! CreateClassIndex()
-    call system('jar -tf android.jar | grep \.class$ > classes_unfiltered')
+function! CreateClassIndex()"{{{
+    call system('jar -tf ' . $ANDROID_HOME . '/platforms/android-'. g:RoboMinSdkVersion .'/android.jar | grep \.class$ > '. g:RoboProjectDir .'classes_unfiltered')
     if v:shell_error > 0
         echoerr 'Error in jar command'
         return
     endif
-    call system('sed s/\[\$\/]/\./g classes_unfiltered > classes') 
+
+    " Get rid of $ signs
+    call system('sed s/\[\$\/]/\./g classes_unfiltered > classes_with_extension') 
     if v:shell_error > 0
         echoerr 'Error in sed command'
-        system('rm classes_unfiltered')
-        if v:shell_error > 0
-            echoerr 'Couldn't delete file: "classes_unfiltered"'
-        endif
+        return
+    endif
+
+    call system('sed s/.class$//g classes_with_extension > classes') 
+    if v:shell_error > 0
+        echoerr 'Error in sed command'
         return
     endif
 
     call system('rm classes_unfiltered')
     if v:shell_error > 0
-        echoerr 'Error in sed command'
-        return
+        echoerr 'Could not delete file: "classes_unfiltered"'
     endif
-endfunction
+
+endfunction"}}}
 
 "Set up vim stuff"
 command! -n=0 -bar RoboInit :call s:Init()
