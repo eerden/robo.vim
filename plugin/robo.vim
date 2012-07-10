@@ -214,7 +214,10 @@ function! s:Init()"{{{
     let g:RoboSrcDir = s:GetSrcDir()
     let g:RoboResDir = g:RoboProjectDir . 'res/' 
     let g:RoboMinSdkVersion = s:GetMinSdk(g:RoboManifestFile)
+    "Create the classes file and add it's full path to g:RoboClassesFile.
+    call s:CreateClassIndex()
     let g:RoboClassesFile = g:RoboProjectDir . 'classes'
+
     let &makeprg="ant -emacs -buildfile " . g:RoboAntBuildFile
     set efm=%A\ %#[javac]\ %f:%l:\ %m,%-Z\ %#[javac]\ %p^,%-C%.%#
 
@@ -366,7 +369,7 @@ function! s:InsertMissingImport()"{{{
     call append(2,'import ' . missingImport . ';')
 endfunction"}}}
 
-function! CreateClassIndex()"{{{
+function! s:CreateClassIndex()"{{{
     "Get the lines that end with '.class' from android.jar file.
     call system('jar -tf ' . $ANDROID_HOME . '/platforms/android-'. g:RoboMinSdkVersion .'/android.jar | grep \.class$ > '. g:RoboProjectDir .'classes_unfiltered')
     if v:shell_error > 0
