@@ -10,7 +10,8 @@ function! s:GotoActivity()"{{{
     let activity = substitute(currentWord, '^\.', '','')
     call s:OpenActivity(activity)
 endfunction"}}}
-function s:GetMinSdk(manifest)
+
+function s:GetMinSdk(manifest)"{{{
     let targetSdk = []
     let manifestFile = readfile(a:manifest)
     for line in manifestFile
@@ -20,7 +21,7 @@ function s:GetMinSdk(manifest)
             return targetSdk[1]
         endif
     endfor
-endfunction
+endfunction"}}}
 
 function! s:GetActivityList(manifest)"{{{
     let manifestfile = readfile(a:manifest)
