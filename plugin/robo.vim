@@ -10,7 +10,7 @@ function! s:GotoActivity()"{{{
     let activity = substitute(currentWord, '^\.', '','')
     call s:OpenActivity(activity)
 endfunction"}}}
-function s:GetSdkTarget(manifest)
+function s:GetMinSdk(manifest)
     let targetSdk = []
     let manifestFile = readfile(a:manifest)
     for line in manifestFile
@@ -213,7 +213,7 @@ function! s:Init()"{{{
     let s:RoboPackagePath = s:GetPackagePath(g:RoboPackageName)
     let g:RoboSrcDir = s:GetSrcDir()
     let g:RoboResDir = g:RoboProjectDir . 'res/' 
-    let g:RoboMinSdkVersion = s:GetSdkTarget(g:RoboManifestFile)
+    let g:RoboMinSdkVersion = s:GetMinSdk(g:RoboManifestFile)
     let &makeprg="ant -emacs -buildfile " . g:RoboAntBuildFile
     set efm=%A\ %#[javac]\ %f:%l:\ %m,%-Z\ %#[javac]\ %p^,%-C%.%#
 
