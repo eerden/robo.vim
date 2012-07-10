@@ -11,7 +11,7 @@ function! s:GotoActivity()"{{{
     call s:OpenActivity(activity)
 endfunction"}}}
 
-function s:GetMinSdk(manifest)"{{{
+function! s:GetMinSdk(manifest)"{{{
     let targetSdk = []
     let manifestFile = readfile(a:manifest)
     for line in manifestFile
@@ -407,7 +407,7 @@ function! s:Init()"{{{
     try
         let g:RoboMinSdkVersion = s:GetMinSdk(g:RoboManifestFile)
     catch
-        echoerr "Can't get MinSdk."
+        echoerr "Can't get MinSdk. Add it to the manifest."
     endtry
 
     "Create the classes file and add it's full path to g:RoboClassesFile.
