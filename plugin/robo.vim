@@ -21,6 +21,7 @@ function s:GetMinSdk(manifest)"{{{
             return targetSdk[1]
         endif
     endfor
+    echoerr "Can't get min SDK, do you have 'android:minSdkVersion' in your manifest file?"
 endfunction"}}}
 
 function! s:GetActivityList(manifest)"{{{
@@ -203,57 +204,6 @@ function! s:RunEmulator()"{{{
     endif
 endfunction"}}}
 
-function! s:Init()"{{{
-    "Set globals
-    let g:RoboLoaded = 1
-    let g:RoboManifestFile = s:SetManifestFile()  
-    let g:RoboActivityList = s:GetActivityList(g:RoboManifestFile) 
-    let g:RoboProjectDir = s:GetDirectories(g:RoboManifestFile)
-    let g:RoboAntBuildFile =  g:RoboProjectDir . 'build.xml'
-    let g:RoboPackageName = s:GetPackageName(g:RoboManifestFile)
-    let s:RoboPackagePath = s:GetPackagePath(g:RoboPackageName)
-    let g:RoboSrcDir = s:GetSrcDir()
-    let g:RoboResDir = g:RoboProjectDir . 'res/' 
-    let g:RoboMinSdkVersion = s:GetMinSdk(g:RoboManifestFile)
-    "Create the classes file and add it's full path to g:RoboClassesFile.
-    call s:CreateClassIndex()
-    let g:RoboClassesFile = g:RoboProjectDir . 'classes'
-
-    let &makeprg="ant -emacs -buildfile " . g:RoboAntBuildFile
-    set efm=%A\ %#[javac]\ %f:%l:\ %m,%-Z\ %#[javac]\ %p^,%-C%.%#
-
-    "Set commands
-    command! -n=0 -bar RoboOpenManifest :call s:OpenManifestFile()
-    command! -n=1 -complete=customlist,s:ListActivities -bar RoboOpenActivity :call s:OpenActivity('<args>')
-    command! -n=0 -bar RoboGoToActivity :call s:GotoActivity()
-    command! -n=0 -bar RoboUnInit :call s:UnInit()
-    command! -n=0 -bar RoboActivityExplorer :call s:ShowActivities()
-    command! -n=0 -bar RoboGoToResource :call s:FindRes()
-    command! -n=0 -bar RoboRunEmulator :call <SID>ShowEmulators()
-    command! -n=0 -bar RoboAddActivity :call <SID>AddActivity()
-    command! -n=0 -bar RoboInsertMissingImport :call <SID>InsertMissingImport()
-
-    "Set mappings
-    nnoremap <Leader>rae :RoboActivityExplorer<cr>
-    nnoremap <Leader>rom :RoboOpenManifest<cr>
-    nnoremap <Leader>rga :RoboGoToActivity<cr>
-    nnoremap <Leader>rgr :RoboGoToResource<cr>
-    nnoremap <Leader>rre :RoboRunEmulator<cr>
-
-    nnoremap <Leader>rdi :make debug install<cr>
-    nnoremap <Leader>rdb :make debug<cr>
-    nnoremap <Leader>rri :make release install<cr>
-    nnoremap <Leader>rrb :make release<cr>
-
-    nnoremap <Leader>rcl :make clean<cr>
-    nnoremap <Leader>rui :make uninstall<cr>
-    
-
-
-    "Statusline
-    set statusline+=%=[Robo]
-endfunction"}}}
-
 function! s:UnInit()"{{{
     unlet g:RoboLoaded
     unlet g:RoboManifestFile
@@ -404,6 +354,100 @@ function! s:CreateClassIndex()"{{{
         echoerr 'Could not delete file: "classes_with_extension" from the project folder. Delete it manually.'
     endif
 
+
+endfunction"}}}
+
+function! s:Init()"{{{
+    "Set globals. Any error here should cancel everything.
+    let g:RoboLoaded = 1
+
+    try
+        let g:RoboManifestFile = s:SetManifestFile()  
+    catch
+        echoerr "Can't get manifest file."
+        return
+    endtry
+
+    try
+        let g:RoboActivityList = s:GetActivityList(g:RoboManifestFile) 
+    catch
+        echoerr "Can't get activity list."
+        return
+    endtry
+
+    try
+        let g:RoboProjectDir = s:GetDirectories(g:RoboManifestFile)
+    catch
+        echoerr "Can't get the project directory."
+        return
+    endtry
+
+    try
+        let g:RoboPackageName = s:GetPackageName(g:RoboManifestFile)
+    catch
+        echoerr "Can't get packagename from manifest."
+        return
+    endtry
+
+    try
+        let s:RoboPackagePath = s:GetPackagePath(g:RoboPackageName)
+    catch
+        echoerr "Can't get package path."
+        return
+    endtry
+
+    try
+        let g:RoboSrcDir = s:GetSrcDir()
+    catch
+        echoerr "Cant get the source directory."
+        return
+    endtry
+
+    let g:RoboResDir = g:RoboProjectDir . 'res/' 
+    try
+        let g:RoboMinSdkVersion = s:GetMinSdk(g:RoboManifestFile)
+    catch
+        echoerr "Can't get MinSdk."
+    endtry
+
+    "Create the classes file and add it's full path to g:RoboClassesFile.
+    try
+        call s:CreateClassIndex()
+    catch
+        echoerr "Can't create the classes index."
+    endtry
+
+    "Set some variables
+    let g:RoboClassesFile = g:RoboProjectDir . 'classes'
+    let g:RoboAntBuildFile =  g:RoboProjectDir . 'build.xml'
+    let &makeprg="ant -emacs -buildfile " . g:RoboAntBuildFile
+    set efm=%A\ %#[javac]\ %f:%l:\ %m,%-Z\ %#[javac]\ %p^,%-C%.%#
+
+    "Set commands
+    command! -n=0 -bar RoboOpenManifest :call s:OpenManifestFile()
+    command! -n=1 -complete=customlist,s:ListActivities -bar RoboOpenActivity :call s:OpenActivity('<args>')
+    command! -n=0 -bar RoboGoToActivity :call s:GotoActivity()
+    command! -n=0 -bar RoboUnInit :call s:UnInit()
+    command! -n=0 -bar RoboActivityExplorer :call s:ShowActivities()
+    command! -n=0 -bar RoboGoToResource :call s:FindRes()
+    command! -n=0 -bar RoboRunEmulator :call <SID>ShowEmulators()
+    command! -n=0 -bar RoboAddActivity :call <SID>AddActivity()
+    command! -n=0 -bar RoboInsertMissingImport :call <SID>InsertMissingImport()
+
+    "Set mappings
+    nnoremap <Leader>rae :RoboActivityExplorer<cr>
+    nnoremap <Leader>rom :RoboOpenManifest<cr>
+    nnoremap <Leader>rga :RoboGoToActivity<cr>
+    nnoremap <Leader>rgr :RoboGoToResource<cr>
+    nnoremap <Leader>rre :RoboRunEmulator<cr>
+
+    nnoremap <Leader>rdi :make debug install<cr>
+    nnoremap <Leader>rdb :make debug<cr>
+    nnoremap <Leader>rri :make release install<cr>
+    nnoremap <Leader>rrb :make release<cr>
+
+    nnoremap <Leader>rcl :make clean<cr>
+    nnoremap <Leader>rui :make uninstall<cr>
 
 endfunction"}}}
 
