@@ -214,6 +214,7 @@ function! s:Init()"{{{
     let g:RoboSrcDir = s:GetSrcDir()
     let g:RoboResDir = g:RoboProjectDir . 'res/' 
     let g:RoboMinSdkVersion = s:GetMinSdk(g:RoboManifestFile)
+    let g:RoboClassesFile = g:RoboProjectDir . 'classes'
     let &makeprg="ant -emacs -buildfile " . g:RoboAntBuildFile
     set efm=%A\ %#[javac]\ %f:%l:\ %m,%-Z\ %#[javac]\ %p^,%-C%.%#
 
@@ -366,29 +367,39 @@ function! s:InsertMissingImport()"{{{
 endfunction"}}}
 
 function! CreateClassIndex()"{{{
+    "Get the lines that end with '.class' from android.jar file.
     call system('jar -tf ' . $ANDROID_HOME . '/platforms/android-'. g:RoboMinSdkVersion .'/android.jar | grep \.class$ > '. g:RoboProjectDir .'classes_unfiltered')
     if v:shell_error > 0
         echoerr 'Error in jar command'
         return
     endif
 
-    " Get rid of $ signs
-    call system('sed s/\[\$\/]/\./g classes_unfiltered > classes_with_extension') 
+    "Get rid of $ signs in class names.
+    call system('sed s/\[\$\/]/\./g ' . g:RoboProjectDir . 'classes_unfiltered > classes_with_extension') 
     if v:shell_error > 0
         echoerr 'Error in sed command'
         return
     endif
 
-    call system('sed s/.class$//g classes_with_extension > classes') 
+    "Remove '.class' extension from lines.
+    call system('sed s/.class$//g ' . g:RoboProjectDir . 'classes_with_extension > classes') 
     if v:shell_error > 0
         echoerr 'Error in sed command'
         return
     endif
 
-    call system('rm classes_unfiltered')
+    "Delete classes_unfiltered.
+    call system('rm ' . g:RoboProjectDir . 'classes_unfiltered')
     if v:shell_error > 0
-        echoerr 'Could not delete file: "classes_unfiltered"'
+        echoerr 'Could not delete file: "classes_unfiltered" from the project folder. Delete it manually.'
     endif
+
+    "Delete classes_with_extension.
+    call system('rm ' . g:RoboProjectDir . 'classes_with_extension')
+    if v:shell_error > 0
+        echoerr 'Could not delete file: "classes_with_extension" from the project folder. Delete it manually.'
+    endif
+
 
 endfunction"}}}
 
