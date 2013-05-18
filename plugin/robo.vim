@@ -34,7 +34,7 @@ function! s:GetMinSdk(manifest)"{{{
     let manifestFile = readfile(a:manifest)
     for line in manifestFile
         "let targetSdk = matchlist(line, 'android:minSdkVersion.\{-}=.\{-}["\']\([0-9]\).\{-}["\']'
-        let targetSdk = matchlist(line, 'android:minSdkVersion.\{-}\([0-9][0-9]\)')
+        let targetSdk = matchlist(line, 'minSdkVersion.\{-}\(\d\{1,3}\)')
         if len(targetSdk) > 0
             return targetSdk[1]
         endif
@@ -340,11 +340,21 @@ endfunction"}}}
 
 function! s:CreateClassIndex()"{{{
     "Get the lines that end with '.class' from android.jar file.
-    call system('jar -tf ' . $ANDROID_HOME . '/platforms/android-'. g:RoboMinSdkVersion .'/android.jar | grep \.class$ > '. g:RoboProjectDir .'classes_unfiltered')
+    let commandString = 'jar -tf ' . $ANDROID_HOME . '/platforms/android-'. g:RoboMinSdkVersion .'/android.jar | grep \.class$ > '. g:RoboProjectDir .'classes_unfiltered'
+    let error_msg = system(commandString)
     if v:shell_error > 0
-        echoerr 'Error in jar command'
+        echo "\n"
+        echo "\n"
+        echo "There was an error while running this command: " . commandString
+        echo "\n"
+        echo "Here's the output from the command:\n\n"
+        echo error_msg
+        echo "\n"
+        echo "Check if the jar file exists in the given path. It might mean a typo in your minsdk value."
+        echo "\n"
         return
     endif
+
 
     "Get rid of $ signs in class names.
     call system('sed s/\[\$\/]/\./g ' . g:RoboProjectDir . 'classes_unfiltered > classes_with_extension') 
@@ -429,11 +439,7 @@ function! s:Init()"{{{
     endtry
 
     "Create the classes file and add it's full path to g:RoboClassesFile.
-    try
-        call s:CreateClassIndex()
-    catch
-        echoerr "Can't create the classes index."
-    endtry
+    call s:CreateClassIndex()
 
     "Set some variables
     let g:RoboClassesFile = g:RoboProjectDir . 'classes'
