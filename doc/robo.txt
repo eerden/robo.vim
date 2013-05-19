@@ -196,7 +196,7 @@ RRRRRRRR     RRRRRR      OOOOOOOO      BBBBBBBBBBBBBBBB         OOOOOOOO
 
 4. *Compiling*    
 ===============================================================================
-    Since 'makepgrg' is set to ant, these should work asexpected:
+    Since 'makepgrg' is set to ant, these should work as expected:
 >
     :make debug install 
     :make debug
