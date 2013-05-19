@@ -18,6 +18,7 @@ R::::::R     R::::R    OO::::::::OO    B:::::::::::::::B      OO::::::::OO
 RRRRRRRR     RRRRRR      OOOOOOOO      BBBBBBBBBBBBBBBB         OOOOOOOO     
 ==============================================================================
 
+0.  |About| 
 
 1.  |Initialization|
 ==============================================================================
@@ -35,6 +36,7 @@ RRRRRRRR     RRRRRR      OOOOOOOO      BBBBBBBBBBBBBBBB         OOOOOOOO
     2.8      |RoboGoToResource|
     2.9      |RoboRunEmulator|
     2.10     |RoboAddActivity|
+    2.11     |RoboInsertMissingImport|
 
 3.  |Variables|
 ==============================================================================
@@ -50,8 +52,14 @@ RRRRRRRR     RRRRRR      OOOOOOOO      BBBBBBBBBBBBBBBB         OOOOOOOO
     3.10    |efm|
 
 4. |Compiling|
+5. |Mappings|
 
 -----------------------------------------------------------------------------
+
+0. *About*
+Robo is a small set of tools for android developers that use ant. After
+succesfully reading the Android.xml file it adds some
+|Commands| and some |Shortcuts|.
 
 
 
@@ -136,7 +144,11 @@ RRRRRRRR     RRRRRR      OOOOOOOO      BBBBBBBBBBBBBBBB         OOOOOOOO
 
     }
 <    
-
+    2.9. *RoboInsertMissingImport*
+   
+    Tries to add the missing import using the 'classes' file generated during
+    init. This command must be run while cursor is on the item that needs to
+    be imported.
 
 3. *Variables* 
 ===============================================================================
@@ -205,13 +217,22 @@ RRRRRRRR     RRRRRR      OOOOOOOO      BBBBBBBBBBBBBBBB         OOOOOOOO
 
 All available ant targets should work.
 
+5. *Mappings*
+   These are the mappings that are available after the init.
 
+   nnoremap <Leader>rae :RoboActivityExplorer<cr>
+   nnoremap <Leader>rom :RoboOpenManifest<cr>
+   nnoremap <Leader>rga :RoboGoToActivity<cr>
+   nnoremap <Leader>rgr :RoboGoToResource<cr>
+   nnoremap <Leader>rre :RoboRunEmulator<cr>
 
+   nnoremap <Leader>rdi :make debug install<cr>
+   nnoremap <Leader>rdb :make debug<cr>
+   nnoremap <Leader>rri :make release install<cr>
+   nnoremap <Leader>rrb :make release<cr>
 
-
-
-
-
+   nnoremap <Leader>rcl :make clean<cr>
+   nnoremap <Leader>rui :make uninstall<cr>
 
 
 vim:tw=78:ts=8:ft=help:norl:iskeyword+=\:
